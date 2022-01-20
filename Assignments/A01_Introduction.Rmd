@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1: Introduction"
-author: "Student Name"
+author: "Devin Domeyer"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -24,13 +24,19 @@ The completed exercise is due on <>.
 
 > Answer: 
 
+I have no previous experience with Git but I took Statistics with John Poulsen last semester and we used R extensively so I feel pretty comfortable with it. Another the data management component is still new to me. 
+
 2. Are there any components of the course about which you feel confident?
 
 > Answer: 
 
+I feel confident in basic usage of R. 
+
 3. Are there any components of the course about which you feel apprehensive?
 
 > Answer: 
+
+I am apprehensive about becoming comfortable with data management in R. I feel like adding rows and columns and merging data frames and manipulating data might becoming daunting and I'll just revert to data management in Excel.
 
 
 ## 2) GitHub
@@ -39,4 +45,5 @@ Provide a link below to your forked course repository in GitHub. Make sure you h
 
 > Answer: 
 
+https://github.com/domeyerd/Environmental_Data_Analytics_2022
 
