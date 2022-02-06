@@ -1,4 +1,4 @@
----
+ ---
 title: "4: Part 1 - Data Wrangling"
 author: "Environmental Data Analytics | John Fay and Luana Lima | Developed by Kateri Salk"
 date: "Spring 2021"
@@ -23,9 +23,9 @@ Opening discussion: why might we be interested in long-term observations of temp
 
 ```{r, message = FALSE}
 getwd()
-#install.packages(tidyverse)
+install.packages(tidyverse)
 library(tidyverse)
-#install.packages(lubridate)
+install.packages(lubridate)
 library(lubridate)
 NTL.phys.data <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv", stringsAsFactors = TRUE)
 
@@ -75,12 +75,13 @@ Here are the relevant commands used in the `filter` function. Add some notes to 
 ```{r}
 class(NTL.phys.data$lakeid)
 class(NTL.phys.data$depth)
+# You can only compare data that's the same class. 
 
 # matrix filtering
 NTL.phys.data.surface1 <- NTL.phys.data[NTL.phys.data$depth == 0,]
 
 # dplyr filtering
-NTL.phys.data.surface2 <- filter(NTL.phys.data, depth == 0)
+NTL.phys.data.surface2 <- filter(NTL.phys.data, depth == 0) # This does same as above
 NTL.phys.data.surface3 <- filter(NTL.phys.data, depth < 0.25)
 
 # Did the methods arrive at the same result?
@@ -102,7 +103,7 @@ NTL.phys.data.PeterPaul3 <- filter(NTL.phys.data, lakename %in% c("Paul Lake", "
 
 # Choose a range of conditions of a numeric or integer variable
 summary(NTL.phys.data$daynum)
-NTL.phys.data.JunethruOctober1 <- filter(NTL.phys.data, daynum > 151 & daynum < 305)
+NTL.phys.data.JunethruOctober1 <- filter(NTL.phys.data, daynum > 151 & daynum < 305) # 151 is an arbitrary number in this dataset that begins June, same with 305 for October
 NTL.phys.data.JunethruOctober2 <- filter(NTL.phys.data, daynum > 151, daynum < 305)
 NTL.phys.data.JunethruOctober3 <- filter(NTL.phys.data, daynum >= 152 & daynum <= 304)
 NTL.phys.data.JunethruOctober4 <- filter(NTL.phys.data, daynum %in% c(152:304))
@@ -126,7 +127,9 @@ Question: Why don't we filter using row numbers?
 Arranging allows us to change the order of rows in our dataset. By default, the arrange function will arrange rows in ascending order.
 
 ```{r}
+# Arranges ascending 
 NTL.phys.data.depth.ascending <- arrange(NTL.phys.data, depth)
+# Arranges descending 
 NTL.phys.data.depth.descending <- arrange(NTL.phys.data, desc(depth))
 
 # Exercise: 
@@ -141,6 +144,7 @@ Selecting allows us to choose certain columns (variables) in our dataset.
 
 ```{r}
 NTL.phys.data.temps <- select(NTL.phys.data, lakename, sampledate:temperature_C)
+# Creates a dataframe with a subset of the data, only lakename and the columns between sampledate and temp. lakename isn't adjacent so you have to call it out individually.
 
 ```
 ### Mutate
@@ -166,6 +170,7 @@ NTL.phys.data.PeterPaul1 <- select(NTL.phys.data.PeterPaul1, lakeid:daynum, mont
 
 # find out the start and end dates of the dataset
 interval(NTL.phys.data.PeterPaul1$sampledate[1], NTL.phys.data.PeterPaul1$sampledate[21613])
+#This does the same thing to find first and last date.
 interval(first(NTL.phys.data.PeterPaul1$sampledate), last(NTL.phys.data.PeterPaul1$sampledate))
 ```
 
@@ -177,6 +182,7 @@ Sometimes we will want to perform multiple functions on a single dataset on our 
 Let's say we want to take our raw dataset (NTL.phys.data), *then* filter the data for Peter and Paul lakes, *then* select temperature and observation information, and *then* add a column for temperature in Fahrenheit: 
 
 ```{r}
+# Because you're running it as a pipe, you don't need to include the dataframe name every time. 
 NTL.phys.data.processed <- 
   NTL.phys.data %>%
   filter(lakename == "Paul Lake" | lakename == "Peter Lake") %>%
@@ -188,6 +194,7 @@ NTL.phys.data.processed <-
 Notice that we did not place the dataset name inside the wrangling function but rather at the beginning.
 
 ### Saving processed datasets
+Saving processed datasets in their own folder, and not overwriting the raw data is good practice. 
 
 ```{r}
 write.csv(NTL.phys.data.PeterPaul1, row.names = FALSE, file = "./Data/Processed/NTL-LTER_Lake_ChemistryPhysics_PeterPaul_Processed.csv")
