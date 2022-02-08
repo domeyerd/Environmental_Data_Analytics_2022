@@ -27,8 +27,8 @@ The completed exercise is due on Monday, Feb 7 @ 7:00pm.
 #1 
 setwd("~/Desktop/Duke/Data Analytics/Environmental_Data_Analytics_2022")
 getwd()
-#install.packages("tidyverse")
-#install.packages("lubridate")
+install.packages("tidyverse")
+install.packages("lubridate")
 library(tidyverse)
 library(lubridate)
 
