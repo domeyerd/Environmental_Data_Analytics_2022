@@ -104,7 +104,9 @@ lakeplot4 <- ggplot(lake, aes(x=month, y=tn_ug))+
   ylab("Total Nitrogen (ug)")
 print(lakeplot4)
 
-lakegrid <- plot_grid(lakeplot2 + theme(legend.position="none"), lakeplot3 + theme(legend.position="none"), lakeplot4 + theme(legend.position="none"), align ="v", ncol = 3, rel_heights = c(1.25, 1))
+lakegrid <- plot_grid(lakeplot2 + theme(legend.position="none"), lakeplot3 + 
+            theme(legend.position="none"), lakeplot4 + theme(legend.position="none"), 
+            align ="v", ncol = 3, rel_heights = c(1.25, 1))
 
 legend <- get_legend(lakeplot2 + 
     guides(color = guide_legend(nrow = 1)) +
