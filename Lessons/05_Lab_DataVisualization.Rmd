@@ -57,16 +57,43 @@ Exercise: build your own scatterplots of PeterPaul.chem.nutrients
 
 # 1. 
 # Plot surface temperatures by day of  year. 
+plot_temp <- ggplot(PeterPaul.chem.nutrients)+
+  geom_point(aes(x=daynum,y=temperature_C))
+print(plot_temp)
 # Color your points by year, and facet by lake in two rows.
+plot_temp2 <- ggplot(PeterPaul.chem.nutrients, aes(x=daynum,y=temperature_C, color =year4)) +
+  geom_point() +
+  facet_wrap(vars(lakename), nrow=2)
+print(plot_temp2)
+  
 # Change the ylab name
-
+plot_temp3 <- ggplot(subset(PeterPaul.chem.nutrients, depth==0), aes(x=daynum,y=temperature_C, color =year4)) +
+  geom_point() +
+  facet_wrap(vars(lakename), nrow=2) +
+  ylab(expression("Surface Temperature"))
+print(plot_temp3)
 
 #2. 
 # Plot temperature by date. Color your points by depth.
+plot_temp4 <- ggplot(PeterPaul.chem.nutrients)+
+  geom_point(aes(x=sampledate,y=temperature_C, color=depth))
+print(plot_temp4)
 # Change the size of your point to 0.5
+plot_temp5 <- ggplot(PeterPaul.chem.nutrients)+
+  geom_point(aes(x=sampledate,y=temperature_C, color=depth, size=0.5))
+print(plot_temp5)
 # Change the color palette to magma and play with direction (+- 1), which one makes more sense?
-# Change x axis to include marker/labels every 5 years
-
+plot_temp6 <- ggplot(PeterPaul.chem.nutrients, aes(x=sampledate,y=temperature_C))+
+  geom_point(aes(color=depth, size=0.5))+
+  scale_color_viridis(option = "magma", direction = -1)
+print(plot_temp6)
+# Change x axis to include marker/labels every 5 years. Note: size cannot be inside the aes function, must be its own function in geom_point or it doesn't work. See above vs below.
+plot_temp7 <- ggplot(PeterPaul.chem.nutrients, aes(x=sampledate,y=temperature_C))+
+  geom_point(aes(color=depth), size= 0.5)+
+  ylab("Temperature in Celcius") +
+  scale_color_viridis(option = "magma", direction = -1)+
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y")
+print(plot_temp7)
 
 
 
@@ -75,15 +102,25 @@ Exercise: build your own scatterplots of PeterPaul.chem.nutrients
 
 Exercise: Plot relationships between air quality measurements
 
+NOTE: If you're adding more than one series, add the aes specifying the x and y inside the geom_point/geom_line/etc function, not the ggplot function. In this case we just know that we're only plotting one. 
+
 ```{r, fig.height = 3, fig.width = 4, warning = FALSE}
 
 # 3. 
 # Plot AQI values for ozone by PM2.5, colored by latitude 
-# Make the points 50 % transparent
+plot_AQI <- ggplot(EPAair, aes(x=PM2.5, y=Ozone))+
+  geom_point(aes(color=meanLat))
+print(plot_AQI)
+# Make the points 50 % transparent. NOTE: make sure outside aes function
+plot_AQI2 <- ggplot(EPAair, aes(x=PM2.5, y=Ozone))+
+  geom_point(aes(color=meanLat), alpha=0.5)
+print(plot_AQI2)
 # Add a line of best fit for the linear regression of these variables.
-
-
-
+plot_AQI3 <- ggplot(EPAair, aes(x=PM2.5, y=Ozone))+
+  geom_point(aes(color=meanLat), alpha=0.5)+
+  geom_smooth(method = lm, color="red")+
+  ylab(expression("O"[3]* "AQI Value"))
+print(plot_AQI3)
 
 ```
 
@@ -95,6 +132,15 @@ Exercise: Plot distributions of AQI values for EPAair.
 
 # 4. 
 # Create several types of plots depicting PM2.5, divided by year. 
+PMplot.color <-
+  ggplot(EPAair, aes(x=Month, y=PM2.5, color=Year))+
+  geom_point()+
+  scale_x_continuous(limits=c(1,12), breaks = c(1:12))
+print(PMplot.color)
+
+ggplot(EPAair, aes(x=as.factor(Year), y=PM2.5))+
+  geom_boxplot()
+                     
 # Choose which plot displays the data best and justify your choice. 
 
 
