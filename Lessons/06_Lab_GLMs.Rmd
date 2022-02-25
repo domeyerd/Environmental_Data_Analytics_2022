@@ -66,7 +66,7 @@ Are Ozone levels below the threshold for "good" AQI index (0-50)?
 
 > Exercise 1: State the hypotheses for testing mean of AQI index.
 
-> Answer: 
+> Answer: H0: mu>= 50, Ha: mu < 50 
 
 
 ```{r}
@@ -164,11 +164,14 @@ For the NTL-LTER dataset, can we predict PM2.5 from Ozone?
 ```{r}
 
 #Exercise 3: Run a linear regression PM2.5 by Ozone. Find the p-value and R-squared value. 
-
-
+lm1 <- lm(data=EPAair, PM2.5 ~ Ozone)
+summary(lm1)
 
 #Exercise 4: Build a scatterplot. Add a line and standard error for the linear regression. 
-
+lm1.plot <- ggplot(EPAair, aes(x = Ozone, y= PM2.5)) +
+  geom_point() +
+  geom_smooth(method = 'lm', color = "red")
+print(lm1.plot)
 
 
 ```
