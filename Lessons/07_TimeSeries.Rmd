@@ -21,13 +21,13 @@ Today we will work with two datasets. The USGS dataset on discharge at the Eno R
 
 library(tidyverse)
 library(lubridate)
-#install.packages("trend")
+install.packages("trend")
 library(trend)
-#install.packages("zoo")
+install.packages("zoo")
 library(zoo)
-#install.packages("Kendall")
+install.packages("Kendall")
 library(Kendall)
-#install.packages("tseries")
+install.packages("tseries")
 library(tseries)
 
 # Set theme
@@ -115,10 +115,13 @@ We first need to turn the discharge data into a time series object in R. This is
 Note: time series objects must be equispaced. In our case, we have daily data with no NAs in the data frame, so we don't need to worry about this. We will cover how to address data that are not equispaced later in the lesson.
 
 ```{r}
+#Starts in January, 1985. Increases by 1 day for every new observation based on frequency. 
 EnoDischarge.late_ts <- ts(EnoDischarge.late$discharge.mean, start = c(1985,1), frequency = 365)
 ```
 
 The `stl` function decomposes the time series object into its component parts. We must specify that the window for seasonal extraction is either "periodic" or a specific number of at least 7. The decomposition proceeds through a loess (locally estimated scatterplot smoothing) function.
+
+Must be univariate. Never give more than one variable. 
 
 ```{r}
 ?stl
@@ -131,6 +134,7 @@ plot(EnoDischarge.late_Decomposed)
 # We can extract the components and turn them into data frames
 EnoDischarge.late_Components <- as.data.frame(EnoDischarge.late_Decomposed$time.series[,1:3])
 
+#Adding the observed and date columns. 
 EnoDischarge.late_Components <- mutate(EnoDischarge.late_Components,
         Observed = EnoDischarge.late$discharge.mean,     
         Date = EnoDischarge.late$datetime)
@@ -181,14 +185,17 @@ head(wind_data)
 summary(wind_data$AWND)
 
 # Adding new column with no missing obs, just for illustration purpose
-# In real applications you will simply replace NAs
+# In real applications you will simply replace NAs, on the original column
+
+# In this example, the package "zoo" is specified for "na.approx" because there are multiple functions with that same name. You also don't need to library the package when you do this. 
 wind_data_clean <- 
   wind_data %>% 
   mutate( AWND.clean = zoo::na.approx(AWND) )
 
 summary(wind_data_clean$AWND.clean)
-#Note the NA is gone
+#Note the NA is gone, but the main properties of the data set are the same. Interpolation will never change the mean, median, min, max, etc. of the dataset. 
 
+#This is just to visualize the na.approx. Showing that the line is connected.If the data point is in the middle of the data set, never use na.omit always replace it with na.approx.
 ggplot(wind_data_clean ) +
   geom_line(aes(x = DATE, y = AWND.clean), color = "red") +
   geom_line(aes(x = DATE, y = AWND), color = "black") +
@@ -200,9 +207,9 @@ ggplot(wind_data_clean ) +
 Specific tests for monotonic trend analysis are listed below, with assumptions and tips: 
 
 * **linear regression**: no seasonality, fits the assumptions of a parametric test. Function: `lm`
-* **Mann-Kendall**: no seasonality, non-parametric, missing data allowed. Function: `MannKendall()` (package: Kendall)
-* **Seasonal Mann-Kendall**: seasonality, non-parametric `SeasonalMannKendall` (package: Kendall)
-* **Spearman Rho**: no seasonality, non-parametric, missing data allowed. Function: `cor.test(method="spearman")` (package: stats)
+* **Mann-Kendall**: no seasonality, non-parametric, missing data allowed. Function: `MannKendall()` (package: Kendall). Can still be called monotonic.
+* **Seasonal Mann-Kendall**: seasonality, non-parametric `SeasonalMannKendall` (package: Kendall). Can still be called monotonic.
+* **Spearman Rho**: no seasonality, non-parametric, missing data allowed. Function: `cor.test(method="spearman")` (package: stats). Cannot handle seasonal data.
 
 Specific test for stochastic trend analysis:
 
@@ -219,8 +226,10 @@ Note that wind speed has a seasonal cycle. We might be interested in knowing how
 ```{r}
 
 # Generate time series (trend test needs ts, not data.frame)
+#Define first month and first year. 
 f_month <- month(first(wind_data_clean$DATE))
 f_year <- year(first(wind_data_clean$DATE))
+#Frequency is 12 becuase working with monthly data.
 wind_data_ts <- ts(wind_data_clean$AWND.clean,
                    start=c(f_year,f_month),
                    frequency=12) 
@@ -229,14 +238,15 @@ wind_data_ts <- ts(wind_data_clean$AWND.clean,
 wind_data_decomp <- stl(wind_data_ts,s.window = "periodic")
 plot(wind_data_decomp)
 
-# Run SMK test
+# Run SMK test. Only test that can handle seasonal data.
 wind_data_trend1 <- Kendall::SeasonalMannKendall(wind_data_ts)
 
 # Inspect results
 wind_data_trend1
 summary(wind_data_trend1)
+# p-value is less than 0.05. This means that the data is not stationary and we have identified a trend. 
 
-
+# This is the other method for seasonal. This gives trend value for each season. So for season 4 and 5 the trend is actually stationary. 
 wind_data_trend2 <- trend::smk.test(wind_data_ts)
 # Inspect results
 wind_data_trend2
